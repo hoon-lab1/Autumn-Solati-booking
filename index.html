@@ -12,6 +12,7 @@
     
     .notice-box { background: #f8f9fa; border: 1px solid #dee2e6; border-left: 4px solid #0066ff; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; font-size: 13px; line-height: 1.6; color: #333; }
     .notice-box b { color: #0066ff; }
+    .notice-box .cancel-tag { color: #e03131; font-weight: 800; }
     
     .status-bar { text-align: center; font-weight: 700; margin-bottom: 14px; color: #e03131; font-size: 15px; }
 
@@ -120,7 +121,6 @@
     .reservation-table th { background: #f8f9fa; color: #495057; font-weight: 700; }
     .deposit-badge { background: #e6fcf5; color: #0ca678; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
 
-    /* 비밀번호 숨김/표시용 토글 버튼 */
     .admin-key-btn {
       background: none;
       border: 1px solid #ced4da;
@@ -144,7 +144,7 @@
     • 노쇼 방지 예약금: <b>5,000원</b><br>
     • 입금 계좌: <b>국민은행 06590104149053 (예금주: 안0훈)</b><br>
     • <b>예약</b>: 빈 좌석 클릭 ➔ 이름 및 <b>4자리 비밀번호</b> 설정 ➔ 예약<br>
-    • <b>취소</b>: 본인 좌석 클릭 ➔ <b>4자리 비밀번호</b> 입력 ➔ 취소
+    • <span class="cancel-tag">취소</span>: 본인 좌석 클릭 ➔ <span class="cancel-tag">4자리 비밀번호</span> 입력 ➔ 취소
   </div>
 
   <div class="status-bar" id="seatStatus">좌석 현황 불러오는 중...</div>
@@ -201,7 +201,7 @@
 
   <div class="form-group">
     <label id="pinLabel">4자리 비밀번호 (본인 확인용)</label>
-    <input type="password" id="userPin" maxlength="4" placeholder="숫자 4자리 입력">
+    <input type="password" id="userPin" maxlength="6" placeholder="숫자 입력">
   </div>
 
   <div class="checkbox-group" id="depositGroup">
@@ -229,7 +229,7 @@
           <th>좌석</th>
           <th>예약자 성함</th>
           <th>예약금 (5천원)</th>
-          <th id="pinTh" style="display:none; width:60px;">비밀번호</th>
+          <th id="pinTh" style="display:none; width:70px;">비밀번호</th>
         </tr>
       </thead>
       <tbody id="adminTableBody">
@@ -261,7 +261,7 @@
   const db = getDatabase(app);
   const seatsRef = ref(db, 'seats');
 
-  // 관리자 전용 마스터 비밀번호 설정 (0000)
+  // 관리자 전용 마스터 비밀번호
   const MASTER_PIN = "000007";
 
   let currentSeatsData = {};
@@ -291,6 +291,9 @@
   onValue(seatsRef, (snapshot) => {
     currentSeatsData = snapshot.val() || {};
     renderTable();
+  }, (error) => {
+    console.error("Firebase Read Error: ", error);
+    document.getElementById('seatStatus').textContent = "⚠️ 데이터베이스 연결 오류 (Firebase 규칙을 확인해주세요)";
   });
 
   function renderTable() {
@@ -406,8 +409,7 @@
       pin: pin
     })
     .then(() => {
-      alert(`🎉 ${name}님, [${currentSelectedSeat}] 좌석 예약 완료!
-(비밀번호 [${pin}]는 좌석 취소 시 필요합니다.)`);
+      alert(`🎉 ${name}님, [${currentSelectedSeat}] 좌석 예약 완료!\n(비밀번호 [${pin}]는 좌석 취소 시 필요합니다.)`);
       resetForm();
     })
     .catch((err) => alert("오류: " + err.message));
@@ -432,8 +434,7 @@
 
     const isMaster = (pin === MASTER_PIN);
     if (savedPin && savedPin !== pin && !isMaster) {
-      alert("❌ 비밀번호가 일치하지 않습니다!
-본인이 예약할 때 입력한 4자리 비밀번호를 다시 확인해주세요.");
+      alert("❌ 비밀번호가 일치하지 않습니다!\n본인이 예약할 때 입력한 4자리 비밀번호를 다시 확인해주세요.");
       document.getElementById('userPin').focus();
       return;
     }
@@ -465,6 +466,10 @@
     document.querySelectorAll('.seat').forEach(s => s.classList.remove('selected'));
     currentSelectedSeat = null;
   }
+
+  window.handleSeatClick = handleSeatClick;
+  window.submitReservation = submitReservation;
+  window.cancelReservation = cancelReservation;
 </script>
 
 </body>
