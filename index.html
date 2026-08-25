@@ -235,13 +235,13 @@
   </div>
 
   <div class="form-group">
-    <label id="pinLabel">4자리 비밀번호 (본인 확인용)</label>
+    <label id="pinLabel">4자리 비밀번호 <span style="color: #e03131; font-weight: 800;">(취소 시 필요)</span></label>
     <input type="password" id="userPin" maxlength="6" placeholder="숫자 입력">
   </div>
 
   <div class="checkbox-group" id="depositGroup">
     <input type="checkbox" id="depositCheck">
-    <label for="depositCheck">5,000원 입금을 완료했습니다 (필수)</label>
+    <label for="depositCheck">5,000원 입금을 완료했습니다 <span style="color: #0066ff; font-weight: 800;">(필수)</span></label>
   </div>
 
   <div class="btn-group">
@@ -415,7 +415,7 @@
       const seatName = typeof currentSeatsData[seatId] === 'object' ? currentSeatsData[seatId].name : currentSeatsData[seatId];
       document.getElementById('selectedSeatDisplay').value = `${seatId} (예약자: ${seatName})`;
       document.getElementById('nameGroup').style.display = 'none';
-      document.getElementById('pinLabel').textContent = '예약 시 설정한 4자리 비밀번호 입력';
+      document.getElementById('pinLabel').innerHTML = '예약 시 설정한 4자리 비밀번호 입력';
       document.getElementById('depositGroup').style.display = 'none';
       document.getElementById('reserveBtn').style.display = 'none';
       document.getElementById('cancelBtn').style.display = 'block';
@@ -423,7 +423,7 @@
       document.getElementById('selectedSeatDisplay').value = seatId;
       document.getElementById('nameGroup').style.display = 'block';
       document.getElementById('userName').value = '';
-      document.getElementById('pinLabel').textContent = '4자리 비밀번호 설정 (취소 시 필요)';
+      document.getElementById('pinLabel').innerHTML = '4자리 비밀번호 <span style="color: #e03131; font-weight: 800;">(취소 시 필요)</span>';
       document.getElementById('depositGroup').style.display = 'flex';
       document.getElementById('reserveBtn').style.display = 'block';
       document.getElementById('cancelBtn').style.display = 'none';
@@ -512,7 +512,7 @@
     document.getElementById('depositCheck').checked = false;
     document.getElementById('selectedSeatDisplay').value = '';
     document.getElementById('nameGroup').style.display = 'block';
-    document.getElementById('pinLabel').textContent = '4자리 비밀번호 설정 (취소 시 필요)';
+    document.getElementById('pinLabel').innerHTML = '4자리 비밀번호 <span style="color: #e03131; font-weight: 800;">(취소 시 필요)</span>';
     document.getElementById('depositGroup').style.display = 'flex';
     document.getElementById('reserveBtn').style.display = 'block';
     document.getElementById('cancelBtn').style.display = 'none';
