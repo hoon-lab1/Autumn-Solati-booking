@@ -293,7 +293,7 @@
     renderTable();
   }, (error) => {
     console.error("Firebase Read Error: ", error);
-    document.getElementById('seatStatus').textContent = "⚠️ 데이터베이스 연결 오류 (Firebase 규칙을 확인해주세요)";
+    document.getElementById('seatStatus').textContent = "⚠️ Firebase 규칙(read/write)을 확인해주세요";
   });
 
   function renderTable() {
@@ -466,10 +466,6 @@
     document.querySelectorAll('.seat').forEach(s => s.classList.remove('selected'));
     currentSelectedSeat = null;
   }
-
-  window.handleSeatClick = handleSeatClick;
-  window.submitReservation = submitReservation;
-  window.cancelReservation = cancelReservation;
 </script>
 
 </body>
