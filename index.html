@@ -15,10 +15,10 @@
     
     .status-bar { text-align: center; font-weight: 700; margin-bottom: 14px; color: #e03131; font-size: 15px; }
 
-    /* 차량 좌석 배치도 (좌석1, 좌석2, 통로, 좌석3) */
+    /* 차량 좌석 배치도 (좌석1, 좌석2, 세로통로, 좌석3) */
     .bus-grid { 
       display: grid; 
-      grid-template-columns: 1fr 1fr 32px 1fr; 
+      grid-template-columns: 1fr 1fr 34px 1fr; 
       gap: 8px; 
       margin-bottom: 20px; 
       align-items: stretch;
@@ -27,7 +27,7 @@
     .seat { 
       border: 2px solid #ced4da; 
       border-radius: 10px; 
-      padding: 12px 2px; 
+      padding: 10px 2px; 
       text-align: center; 
       font-size: 13px; 
       font-weight: 700; 
@@ -40,7 +40,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      min-height: 60px;
+      min-height: 64px;
     }
     .seat:hover:not(.occupied):not(.driver):not(.door) {
       border-color: #339af0;
@@ -52,7 +52,7 @@
     .seat.door { background: #e9ecef; border-color: #dee2e6; cursor: not-allowed; color: #868e96; }
     .seat.empty-space { border: none; background: transparent; cursor: default; min-height: auto; }
 
-    /* 파란색 긴 통로 */
+    /* 세로 긴 통로 바 */
     .aisle {
       background: #2b6cb0;
       color: #ffffff;
@@ -61,9 +61,9 @@
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 12px;
+      font-size: 13px;
       writing-mode: vertical-rl;
-      letter-spacing: 6px;
+      letter-spacing: 10px;
       user-select: none;
     }
 
@@ -75,7 +75,7 @@
       box-shadow: 0 0 0 2px rgba(28, 126, 214, 0.2);
     }
 
-    /* 예약 완료 좌석 (빨간색 & 흰색 명찰) */
+    /* 예약 완료 좌석 (빨간색 배경 + 흰색 네모 명찰) */
     .seat.occupied { 
       background-color: #ff4d4f !important; 
       border-color: #d9363e !important; 
@@ -86,11 +86,11 @@
       display: inline-block;
       background: #ffffff;
       color: #d9363e;
-      padding: 2px 8px;
+      padding: 3px 8px;
       border-radius: 4px;
       font-weight: 800;
       font-size: 12px;
-      margin-top: 4px;
+      margin-top: 5px;
       max-width: 90%;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -111,7 +111,7 @@
     .btn-cancel { flex: 1; background: #fa5252; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; }
     .btn-cancel:hover { background: #e03131; }
 
-    /* 관리자용 예약 명단 섹션 */
+    /* 관리자용 실시간 예약 명단 */
     .admin-section { margin-top: 28px; border-top: 2px dashed #dee2e6; padding-top: 18px; }
     .admin-title { font-size: 15px; font-weight: 800; color: #212529; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
     .admin-title span { font-size: 12px; color: #868e96; font-weight: 500; }
@@ -130,13 +130,13 @@
     📢 <b>예약 & 취소 안내</b><br>
     • 노쇼 방지 예약금: <b>5,000원</b><br>
     • 입금 계좌: <b>카카오뱅크 1234-56-7890123 (예금주: 홍길동)</b><br>
-    • <b>예약</b>: 빈 좌석 클릭 ➔ 이름 및 <b>4자리 비밀번호</b> 설정 ➔ 예약하기<br>
-    • <b>취소</b>: 본인 좌석 클릭 ➔ 설정한 <b>4자리 비밀번호</b> 입력 ➔ 취소하기
+    • <b>예약</b>: 빈 좌석 클릭 ➔ 이름 및 <b>4자리 비밀번호</b> 설정 ➔ 예약<br>
+    • <b>취소</b>: 본인 좌석 클릭 ➔ <b>4자리 비밀번호</b> 입력 ➔ 취소
   </div>
 
   <div class="status-bar" id="seatStatus">좌석 현황 불러오는 중...</div>
 
-  <!-- 차량 레이아웃 (4열 + 가운데 통로) -->
+  <!-- 차량 레이아웃 -->
   <div class="bus-grid" id="busLayout">
     <!-- 운전석 & F1 -->
     <div class="seat driver">영훈<br>(운전석)</div>
@@ -182,7 +182,7 @@
   </div>
 
   <div class="form-group" id="nameGroup">
-    <label id="nameLabel">예약자 성함</label>
+    <label>예약자 성함</label>
     <input type="text" id="userName" placeholder="이름을 입력하세요">
   </div>
 
@@ -300,6 +300,7 @@
     document.getElementById('totalDepositDisplay').textContent = `총 입금액: ${(bookedCount * 5000).toLocaleString()}원 (${bookedCount}명)`;
   });
 
+  // 좌석 클릭 이벤트
   window.handleSeatClick = function(seatId) {
     document.querySelectorAll('.seat').forEach(s => s.classList.remove('selected'));
     const target = document.querySelector(`[data-id="${seatId}"]`);
@@ -312,7 +313,7 @@
       const seatName = typeof currentSeatsData[seatId] === 'object' ? currentSeatsData[seatId].name : currentSeatsData[seatId];
       document.getElementById('selectedSeatDisplay').value = `${seatId} (예약자: ${seatName})`;
       document.getElementById('nameGroup').style.display = 'none';
-      document.getElementById('pinLabel').textContent = '예약 시 설정한 4자리 비밀번호';
+      document.getElementById('pinLabel').textContent = '예약 시 설정한 4자리 비밀번호 입력';
       document.getElementById('depositGroup').style.display = 'none';
       document.getElementById('reserveBtn').style.display = 'none';
       document.getElementById('cancelBtn').style.display = 'block';
@@ -320,13 +321,14 @@
       document.getElementById('selectedSeatDisplay').value = seatId;
       document.getElementById('nameGroup').style.display = 'block';
       document.getElementById('userName').value = '';
-      document.getElementById('pinLabel').textContent = '4자리 비밀번호 (본인 확인용)';
+      document.getElementById('pinLabel').textContent = '4자리 비밀번호 설정 (취소 시 필요)';
       document.getElementById('depositGroup').style.display = 'flex';
       document.getElementById('reserveBtn').style.display = 'block';
       document.getElementById('cancelBtn').style.display = 'none';
     }
   };
 
+  // 예약 처리
   window.submitReservation = function() {
     const name = document.getElementById('userName').value.trim();
     const pin = document.getElementById('userPin').value.trim();
@@ -359,12 +361,13 @@
       pin: pin
     })
     .then(() => {
-      alert(`🎉 ${name}님, [${currentSelectedSeat}] 좌석 예약 완료!\n(좌석을 변경하거나 취소할 때는 설정하신 비밀번호 [${pin}]가 필요합니다.)`);
+      alert(`🎉 ${name}님, [${currentSelectedSeat}] 좌석 예약 완료!\n(비밀번호 [${pin}]는 좌석 취소 시 필요합니다.)`);
       resetForm();
     })
     .catch((err) => alert("오류: " + err.message));
   };
 
+  // 취소 처리 (4자리 비밀번호 일치 확인)
   window.cancelReservation = function() {
     const pin = document.getElementById('userPin').value.trim();
 
@@ -383,14 +386,15 @@
     const savedName = typeof seatData === 'object' ? seatData.name : seatData;
 
     if (savedPin && savedPin !== pin) {
-      alert("❌ 비밀번호가 일치하지 않습니다!\n본인이 예약한 자리가 아니거나 비밀번호가 틀렸습니다.");
+      alert("❌ 비밀번호가 일치하지 않습니다!\n본인이 예약할 때 입력한 4자리 비밀번호를 다시 확인해주세요.");
+      document.getElementById('userPin').focus();
       return;
     }
 
     if (confirm(`[${currentSelectedSeat}] ${savedName}님의 예약을 취소하시겠습니까?`)) {
       remove(ref(db, `seats/${currentSelectedSeat}`))
         .then(() => {
-          alert(`✅ [${currentSelectedSeat}] 좌석 예약이 취소되었습니다. 다시 다른 자리를 선택하실 수 있습니다.`);
+          alert(`✅ [${currentSelectedSeat}] 좌석 예약이 정상 취소되었습니다.`);
           resetForm();
         })
         .catch((err) => alert("취소 오류: " + err.message));
@@ -403,7 +407,7 @@
     document.getElementById('depositCheck').checked = false;
     document.getElementById('selectedSeatDisplay').value = '';
     document.getElementById('nameGroup').style.display = 'block';
-    document.getElementById('pinLabel').textContent = '4자리 비밀번호 (본인 확인용)';
+    document.getElementById('pinLabel').textContent = '4자리 비밀번호 설정 (취소 시 필요)';
     document.getElementById('depositGroup').style.display = 'flex';
     document.getElementById('reserveBtn').style.display = 'block';
     document.getElementById('cancelBtn').style.display = 'none';
