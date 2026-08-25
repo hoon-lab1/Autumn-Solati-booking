@@ -7,7 +7,7 @@
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif; }
     body { background-color: #f1f3f5; margin: 0; padding: 16px; display: flex; justify-content: center; }
-    .container { background: #fff; width: 100%; max-width: 440px; padding: 20px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .container { background: #fff; width: 100%; max-width: 460px; padding: 20px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
     h2 { text-align: center; margin-top: 0; color: #111; font-size: 20px; font-weight: 800; }
     
     .notice-box { background: #f8f9fa; border: 1px solid #dee2e6; border-left: 4px solid #0066ff; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; font-size: 13px; line-height: 1.6; color: #333; }
@@ -15,10 +15,10 @@
     
     .status-bar { text-align: center; font-weight: 700; margin-bottom: 14px; color: #e03131; font-size: 15px; }
 
-    /* 차량 좌석 배치도 (좌석1, 좌석2, 세로통로, 좌석3) */
+    /* 차량 좌석 배치도 */
     .bus-grid { 
       display: grid; 
-      grid-template-columns: 1fr 1fr 34px 1fr; 
+      grid-template-columns: 1fr 1fr 28px 1fr; 
       gap: 8px; 
       margin-bottom: 20px; 
       align-items: stretch;
@@ -27,7 +27,7 @@
     .seat { 
       border: 2px solid #ced4da; 
       border-radius: 10px; 
-      padding: 10px 2px; 
+      padding: 8px 2px; 
       text-align: center; 
       font-size: 13px; 
       font-weight: 700; 
@@ -40,7 +40,8 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      min-height: 64px;
+      height: 64px;
+      width: 100%;
     }
     .seat:hover:not(.occupied):not(.driver):not(.door) {
       border-color: #339af0;
@@ -50,20 +51,20 @@
     /* 운전석 및 문 */
     .seat.driver { background: #343a40; color: #fff; border-color: #343a40; cursor: not-allowed; }
     .seat.door { background: #e9ecef; border-color: #dee2e6; cursor: not-allowed; color: #868e96; }
-    .seat.empty-space { border: none; background: transparent; cursor: default; min-height: auto; }
+    .seat.empty-space { border: none; background: transparent; cursor: default; height: 64px; }
 
-    /* 세로 긴 통로 바 */
+    /* 회색 세로 통로 바 */
     .aisle {
-      background: #2b6cb0;
+      background: #a0a0a0;
       color: #ffffff;
       border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 13px;
+      font-size: 12px;
       writing-mode: vertical-rl;
-      letter-spacing: 10px;
+      letter-spacing: 8px;
       user-select: none;
     }
 
@@ -75,7 +76,7 @@
       box-shadow: 0 0 0 2px rgba(28, 126, 214, 0.2);
     }
 
-    /* 예약 완료 좌석 (빨간색 배경 + 흰색 네모 명찰) */
+    /* 예약 완료 좌석 */
     .seat.occupied { 
       background-color: #ff4d4f !important; 
       border-color: #d9363e !important; 
@@ -86,15 +87,14 @@
       display: inline-block;
       background: #ffffff;
       color: #d9363e;
-      padding: 3px 8px;
+      padding: 2px 4px;
       border-radius: 4px;
       font-weight: 800;
-      font-size: 12px;
-      margin-top: 5px;
-      max-width: 90%;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 11px;
+      margin-top: 3px;
+      width: 92%;
       white-space: nowrap;
+      letter-spacing: -0.5px;
     }
 
     /* 입력 폼 */
@@ -116,9 +116,22 @@
     .admin-title { font-size: 15px; font-weight: 800; color: #212529; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
     .admin-title span { font-size: 12px; color: #868e96; font-weight: 500; }
     .reservation-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .reservation-table th, .reservation-table td { border: 1px solid #e9ecef; padding: 8px 10px; text-align: center; }
+    .reservation-table th, .reservation-table td { border: 1px solid #e9ecef; padding: 8px 6px; text-align: center; }
     .reservation-table th { background: #f8f9fa; color: #495057; font-weight: 700; }
     .deposit-badge { background: #e6fcf5; color: #0ca678; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+
+    /* 비밀번호 숨김/표시용 토글 버튼 */
+    .admin-key-btn {
+      background: none;
+      border: 1px solid #ced4da;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      color: #495057;
+      margin-left: 6px;
+    }
+    .admin-key-btn:hover { background: #e9ecef; }
   </style>
 </head>
 <body>
@@ -129,7 +142,7 @@
   <div class="notice-box">
     📢 <b>예약 & 취소 안내</b><br>
     • 노쇼 방지 예약금: <b>5,000원</b><br>
-    • 입금 계좌: <b>카카오뱅크 1234-56-7890123 (예금주: 홍길동)</b><br>
+    • 입금 계좌: <b>국민은행 06590104149053 (예금주: 안0훈)</b><br>
     • <b>예약</b>: 빈 좌석 클릭 ➔ 이름 및 <b>4자리 비밀번호</b> 설정 ➔ 예약<br>
     • <b>취소</b>: 본인 좌석 클릭 ➔ <b>4자리 비밀번호</b> 입력 ➔ 취소
   </div>
@@ -204,7 +217,10 @@
   <!-- 실시간 총괄 예약 명단 -->
   <div class="admin-section">
     <div class="admin-title">
-      📋 실시간 예약자 명단표
+      <div>
+        📋 실시간 예약자 명단표
+        <button class="admin-key-btn" onclick="toggleAdminPinView()">🔒 비번확인</button>
+      </div>
       <span id="totalDepositDisplay">입금 확인: 0원</span>
     </div>
     <table class="reservation-table">
@@ -213,6 +229,7 @@
           <th>좌석</th>
           <th>예약자 성함</th>
           <th>예약금 (5천원)</th>
+          <th id="pinTh" style="display:none; width:60px;">비밀번호</th>
         </tr>
       </thead>
       <tbody id="adminTableBody">
@@ -244,16 +261,43 @@
   const db = getDatabase(app);
   const seatsRef = ref(db, 'seats');
 
+  // 관리자 전용 마스터 비밀번호 설정 (0000)
+  const MASTER_PIN = "000007";
+
   let currentSeatsData = {};
   let currentSelectedSeat = null;
+  let isAdminPinVisible = false;
 
   const seatOrder = ['F1', 'A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3'];
+
+  // 관리자 전용 비밀번호 열람 기능
+  window.toggleAdminPinView = function() {
+    if (!isAdminPinVisible) {
+      const input = prompt("관리자 마스터 비밀번호를 입력하세요:");
+      if (input === MASTER_PIN) {
+        isAdminPinVisible = true;
+        alert("관리자 모드 활성화: 모든 예약자의 비밀번호가 표시됩니다.");
+        renderTable();
+      } else if (input !== null) {
+        alert("마스터 비밀번호가 올바르지 않습니다.");
+      }
+    } else {
+      isAdminPinVisible = false;
+      renderTable();
+    }
+  };
 
   // 실시간 데이터베이스 동기화
   onValue(seatsRef, (snapshot) => {
     currentSeatsData = snapshot.val() || {};
+    renderTable();
+  });
+
+  function renderTable() {
     let bookedCount = 0;
     let tableRowsHtml = '';
+    const pinTh = document.getElementById('pinTh');
+    if (pinTh) pinTh.style.display = isAdminPinVisible ? '' : 'none';
 
     seatOrder.forEach(id => {
       const el = document.querySelector(`[data-id="${id}"]`);
@@ -265,6 +309,7 @@
         el.classList.add('occupied');
         
         const seatName = typeof currentSeatsData[id] === 'object' ? currentSeatsData[id].name : currentSeatsData[id];
+        const seatPin = typeof currentSeatsData[id] === 'object' ? currentSeatsData[id].pin : '-';
         nameBox.innerHTML = `<span class="seat-name">${seatName}</span>`;
 
         tableRowsHtml += `
@@ -272,6 +317,7 @@
             <td style="font-weight:700; color:#0066ff;">${id}</td>
             <td style="font-weight:700;">${seatName}</td>
             <td><span class="deposit-badge">입금완료 (5,000원)</span></td>
+            ${isAdminPinVisible ? `<td style="font-weight:700; color:#e03131;">${seatPin}</td>` : ''}
           </tr>
         `;
       } else {
@@ -291,16 +337,16 @@
     }
 
     const tbody = document.getElementById('adminTableBody');
+    const colspan = isAdminPinVisible ? 4 : 3;
     if (bookedCount === 0) {
-      tbody.innerHTML = `<tr><td colspan="3" style="color:#868e96;">현재 예약 내역이 없습니다.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="${colspan}" style="color:#868e96;">현재 예약 내역이 없습니다.</td></tr>`;
     } else {
       tbody.innerHTML = tableRowsHtml;
     }
 
     document.getElementById('totalDepositDisplay').textContent = `총 입금액: ${(bookedCount * 5000).toLocaleString()}원 (${bookedCount}명)`;
-  });
+  }
 
-  // 좌석 클릭 이벤트
   window.handleSeatClick = function(seatId) {
     document.querySelectorAll('.seat').forEach(s => s.classList.remove('selected'));
     const target = document.querySelector(`[data-id="${seatId}"]`);
@@ -328,7 +374,6 @@
     }
   };
 
-  // 예약 처리
   window.submitReservation = function() {
     const name = document.getElementById('userName').value.trim();
     const pin = document.getElementById('userPin').value.trim();
@@ -361,13 +406,13 @@
       pin: pin
     })
     .then(() => {
-      alert(`🎉 ${name}님, [${currentSelectedSeat}] 좌석 예약 완료!\n(비밀번호 [${pin}]는 좌석 취소 시 필요합니다.)`);
+      alert(`🎉 ${name}님, [${currentSelectedSeat}] 좌석 예약 완료!
+(비밀번호 [${pin}]는 좌석 취소 시 필요합니다.)`);
       resetForm();
     })
     .catch((err) => alert("오류: " + err.message));
   };
 
-  // 취소 처리 (4자리 비밀번호 일치 확인)
   window.cancelReservation = function() {
     const pin = document.getElementById('userPin').value.trim();
 
@@ -385,16 +430,22 @@
     const savedPin = typeof seatData === 'object' ? seatData.pin : null;
     const savedName = typeof seatData === 'object' ? seatData.name : seatData;
 
-    if (savedPin && savedPin !== pin) {
-      alert("❌ 비밀번호가 일치하지 않습니다!\n본인이 예약할 때 입력한 4자리 비밀번호를 다시 확인해주세요.");
+    const isMaster = (pin === MASTER_PIN);
+    if (savedPin && savedPin !== pin && !isMaster) {
+      alert("❌ 비밀번호가 일치하지 않습니다!
+본인이 예약할 때 입력한 4자리 비밀번호를 다시 확인해주세요.");
       document.getElementById('userPin').focus();
       return;
     }
 
-    if (confirm(`[${currentSelectedSeat}] ${savedName}님의 예약을 취소하시겠습니까?`)) {
+    const cancelMsg = isMaster 
+      ? `[관리자 권한] [${currentSelectedSeat}] ${savedName}님의 예약을 강제 취소하시겠습니까?`
+      : `[${currentSelectedSeat}] ${savedName}님의 예약을 취소하시겠습니까?`;
+
+    if (confirm(cancelMsg)) {
       remove(ref(db, `seats/${currentSelectedSeat}`))
         .then(() => {
-          alert(`✅ [${currentSelectedSeat}] 좌석 예약이 정상 취소되었습니다.`);
+          alert(`✅ [${currentSelectedSeat}] 좌석 예약이 취소되었습니다.`);
           resetForm();
         })
         .catch((err) => alert("취소 오류: " + err.message));
